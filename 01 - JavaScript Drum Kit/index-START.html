@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>JS Drum Kit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div>
+    <div class="keys">
+      <div data-key="65" class="key">
+        <kbd>A</kbd>
+        <span class="sound">clap</span>
+      </div>
+      <div data-key="83" class="key">
+        <kbd>S</kbd>
+        <span class="sound">hihat</span>
+      </div>
+      <div data-key="68" class="key">
+        <kbd>D</kbd>
+        <span class="sound">kick</span>
+      </div>
+      <div data-key="70" class="key">
+        <kbd>F</kbd>
+        <span class="sound">openhat</span>
+      </div>
+      <div data-key="71" class="key">
+        <kbd>G</kbd>
+        <span class="sound">boom</span>
+      </div>
+      <div data-key="72" class="key">
+        <kbd>H</kbd>
+        <span class="sound">ride</span>
+      </div>
+      <div data-key="74" class="key">
+        <kbd>J</kbd>
+        <span class="sound">snare</span>
+      </div>
+      <div data-key="75" class="key">
+        <kbd>K</kbd>
+        <span class="sound">tom</span>
+      </div>
+      <div data-key="76" class="key">
+        <kbd>L</kbd>
+        <span class="sound">tink</span>
+      </div>
+    </div>
+  </div>
+  <audio data-key="65" src="sounds/clap.wav"></audio>
+  <audio data-key="83" src="sounds/hihat.wav"></audio>
+  <audio data-key="68" src="sounds/kick.wav"></audio>
+  <audio data-key="70" src="sounds/openhat.wav"></audio>
+  <audio data-key="71" src="sounds/boom.wav"></audio>
+  <audio data-key="72" src="sounds/ride.wav"></audio>
+  <audio data-key="74" src="sounds/snare.wav"></audio>
+  <audio data-key="75" src="sounds/tom.wav"></audio>
+  <audio data-key="76" src="sounds/tink.wav"></audio>
+
+  <script>
+    {   //程式開始前須解決問題: 1. 點到其他按鍵會報錯 2. 無法連續觸發，按鍵會卡卡的 3. 選到後再選其他按鍵無法取消之前的選取
+      window.addEventListener('keydown', playHandler);  //keydown按下按鈕不放 ;keyup按下按鈕
+
+      function playHandler(e) {
+        //play music
+        const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+        if (audio) {
+          audio.currentTime = 0;  //連續觸發 -> 聲音可以一直播
+          audio.play(); //若audio存在，就撥放 ->避免按到其他按鍵出錯
+        }
+        //dom style
+        const dom = document.querySelector(`div[data-key="${e.keyCode}"]`);
+        if (dom) dom.classList.add('playing');
+      }
+
+      document.querySelectorAll('.key').forEach(key => {
+        key.addEventListener('transitionend', transitionendHandler);
+
+      });
+
+      function transitionendHandler(e) {
+        if (e.propertyName === 'transform') {
+          e.currentTarget.classList.remove('playing');
+        }
+      }
+    }
+  </script>
+
+
+</body>
+
+</html>
