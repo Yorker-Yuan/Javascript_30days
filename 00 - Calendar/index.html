@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>萬年曆</title>
+  <style>
+    th {
+      width: 50px;
+      background-color: #000;
+      color: #ccc;
+    }
+
+    td {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <select id="year"></select>
+  <select id="month"></select>
+  <table>
+    <thead>
+      <th>日</th>
+      <th>一</th>
+      <th>二</th>
+      <th>三</th>
+      <th>四</th>
+      <th>五</th>
+      <th>六</th>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <script>
+    ; (function () {  //產生年份
+      var html = '';
+      var nowYear = new Date().getFullYear();
+      for (let i = nowYear - 50; i <= nowYear + 50; i++) {
+        html += '<option';
+        if (i === nowYear) {
+          html += ' selected';  //預設停在目前的年度
+        }
+        html += `>${i}</option>`;
+      }
+      document.querySelector('#year').innerHTML = html;
+    })();
+
+    (function () {  //產生月份
+      var html = '';
+      var nowMonth = new Date().getMonth() + 1; //0~11
+      for (let i = 1; i <= 12; i++) {
+        html += `<option`;
+        if (i === nowMonth) {
+          html += ' selected';
+        }
+        html += `>${i}</option>`;
+      }
+      document.querySelector('#month').innerHTML = html;
+    })();
+
+    (function () {
+      document.querySelectorAll('select').forEach((el) => {
+        el.addEventListener('change', () => {
+          buildCalendar(document.querySelector('#year').value, document.querySelector('#month').value);
+        });
+        el.dispatchEvent(new Event('change'));  //一載入網頁就觸發alert
+      });
+    })();
+
+    function buildCalendar(year, month) {
+      let html = '';
+      month = month - 1;  //因為js的month等於實際月份-1
+      let first = new Date(year, month, 1).getDay();  //本月第一天是星期幾
+      let last = (function () {
+        let day = new Date(year, month, 1);
+        //利用先+1個月-1天去得知本月有幾天 => 例如:5/1+1month =6/1,6/1-1day=5/31
+        day.setMonth(day.getMonth() + 1);
+        day.setDate(0);
+        return day.getDate();
+      })();
+      let index = 1;
+      for (let r = 0; r < 6; r++) {
+        if (index > last) break; //當日期超過每月最後一天就不再顯示
+        html += `<tr>`;
+        for (let c = 0; c < 7; c++) {
+          html += '<td>';
+          if (c + (r * 7) >= first) {
+            if (index > last) break; //當日期超過每月最後一天就不再顯示
+            html += index;
+            index++;
+          }
+          html += '</td>';
+        }
+        html += '</tr>';
+      }
+      document.querySelector('tbody').innerHTML = html;
+    }
+  </script>
+</body>
+
+</html>
